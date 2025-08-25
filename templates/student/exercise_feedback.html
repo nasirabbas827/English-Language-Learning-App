@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ exercise.lesson.title }} - Exercise Feedback{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Exercise Feedback: {{ exercise.lesson.title }}</h3>
+    <p><strong>Exercise Type:</strong> {{ exercise.get_type_display }}</p>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5>Score: {{ score }}%</h5>
+        </div>
+    </div>
+
+    {% if spoken_text %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5>Your Spoken Text:</h5>
+                <p>{{ spoken_text }}</p>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if essay_text %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5>Your Essay:</h5>
+                <p>{{ essay_text|linebreaks }}</p>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if feedback %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5>Feedback:</h5>
+                <pre style="white-space: pre-wrap;">{{ feedback }}</pre>
+            </div>
+        </div>
+    {% endif %}
+
+    <a href="{% url 'student_dashboard' %}" class="btn btn-primary mt-3">&larr; Back to Dashboard</a>
+</div>
+{% endblock %}

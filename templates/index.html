@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}English Language Learning App - Learn English with Ease{% endblock %}
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80'); background-size: cover; background-position: center; padding: 100px 0; color: white;">
+    <div class="container text-center">
+        <h1 class="display-4 mb-3"><i class="fas fa-language me-2"></i>Welcome to English Language Learning App</h1>
+        <p class="lead mb-4">Master English with interactive lessons, quizzes, and personalized feedback tailored to your skill level!</p>
+        {% if request.session.user_id %}
+            {% if request.session.user_role == "student" %}
+                <p class="mb-4">You are logged in as <strong>Student</strong>.</p>
+                <a href="{% url 'student_dashboard' %}" class="btn btn-primary btn-lg"><i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard</a>
+            {% elif request.session.user_role == "teacher" %}
+                <p class="mb-4">You are logged in as <strong>Teacher</strong>.</p>
+                <a href="{% url 'teacher_dashboard' %}" class="btn btn-primary btn-lg"><i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard</a>
+            {% endif %}
+        {% else %}
+            <p class="mb-4">Join our platform to start your English learning journey today.</p>
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg me-2"><i class="fas fa-sign-in-alt me-2"></i>Login</a>
+            <a href="{% url 'register' %}" class="btn btn-success btn-lg"><i class="fas fa-user-plus me-2"></i>Register</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container my-5">
+    <h2 class="text-center mb-5 text-primary"><i class="fas fa-star me-2"></i>Why Choose Our App?</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100 border-0">
+                <img src="https://images.unsplash.com/photo-1755548413928-4aaeba7c740e?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="card-img-top" alt="Interactive Lessons">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Interactive Lessons</h4>
+                    <p class="card-text">Engage with multimedia content like videos, audio clips, and flashcards tailored to your skill level.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100 border-0">
+                <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Gamified Learning">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Gamified Learning</h4>
+                    <p class="card-text">Earn points, badges, and compete on leaderboards to stay motivated and track your progress.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100 border-0">
+                <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="card-img-top" alt="Personalized Feedback">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Personalized Feedback</h4>
+                    <p class="card-text">Get automated grammar and spelling feedback on writing exercises to improve your skills.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-5 text-primary"><i class="fas fa-cogs me-2"></i>How It Works</h2>
+        <div class="row g-4">
+            <div class="col-md-3 text-center">
+                <i class="fas fa-user-plus fa-3x mb-3 text-primary"></i>
+                <h5>Sign Up</h5>
+                <p>Create an account as a student or teacher to access personalized learning tools.</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <i class="fas fa-book-open fa-3x mb-3 text-primary"></i>
+                <h5>Choose Lessons</h5>
+                <p>Select from beginner to advanced lessons in grammar, vocabulary, and more.</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <i class="fas fa-tasks fa-3x mb-3 text-primary"></i>
+                <h5>Practice & Learn</h5>
+                <p>Complete interactive exercises with instant feedback to hone your skills.</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <i class="fas fa-trophy fa-3x mb-3 text-primary"></i>
+                <h5>Earn Rewards</h5>
+                <p>Gain points, badges, and certificates as you progress through your learning journey.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Testimonials Section -->
+<div class="container my-5">
+    <h2 class="text-center mb-5 text-primary"><i class="fas fa-quote-left me-2"></i>Learner Success Stories</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" class="rounded-circle mb-3" alt="Learner 1" style="width: 80px; height: 80px;">
+                    <p class="card-text">"This app made learning English fun and engaging! The quizzes and badges kept me motivated."</p>
+                    <h6 class="card-title">Sarah M., Student</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" class="rounded-circle mb-3" alt="Learner 2" style="width: 80px; height: 80px;">
+                    <p class="card-text">"As a teacher, I love creating customized lessons and tracking my students' progress."</p>
+                    <h6 class="card-title">Mr. Ahmed, Teacher</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" class="rounded-circle mb-3" alt="Learner 3" style="width: 80px; height: 80px;">
+                    <p class="card-text">"The speaking practice with feedback helped me improve my pronunciation significantly!"</p>
+                    <h6 class="card-title">John K., Student</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action Section -->
+<div class="bg-primary py-5 text-white">
+    <div class="container text-center">
+        <h3 class="mb-3">Ready to Master English?</h3>
+        <p class="mb-4">Join thousands of learners and start your journey to fluency today!</p>
+        <a href="{% url 'register' %}" class="btn btn-light btn-lg"><i class="fas fa-user-plus me-2"></i>Start Learning Now</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Quiz Questions - English Language Learning App{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="text-primary"><i class="fas fa-question-circle me-2"></i>Quiz Questions</h2>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col">
+            <a href="{% url 'quizquestion_create' %}" class="btn btn-primary"><i class="fas fa-plus-circle me-2"></i>Add Question</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered align-middle">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th scope="col">Exercise</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Question</th>
+                                    <th scope="col">Correct Answer</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for q in questions %}
+                                <tr>
+                                    <td>{{ q.exercise.lesson.title }}</td>
+                                    <td>{{ q.get_question_type_display }}</td>
+                                    <td>{{ q.question_text|truncatechars:50 }}</td>
+                                    <td>{{ q.correct_answer|truncatechars:30 }}</td>
+                                    <td>
+                                        <a href="{% url 'quizquestion_update' q.pk %}" class="btn btn-sm btn-warning me-2"><i class="fas fa-edit me-1"></i>Edit</a>
+                                        <a href="{% url 'quizquestion_delete' q.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this question?');"><i class="fas fa-trash me-1"></i>Delete</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">No questions found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

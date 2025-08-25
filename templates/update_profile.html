@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Update Profile{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Update Profile</h3>
+                </div>
+
+                <div class="card-body">
+                    <!-- Circular avatar preview -->
+                    <div class="d-flex justify-content-center mb-4">
+                        <div style="width:130px; height:130px; border-radius:50%; overflow:hidden; border:3px solid #e9ecef;">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="Profile Picture"
+                                     style="width:100%; height:100%; object-fit:cover;">
+                            {% else %}
+                                <img src="{% static 'images/default-avatar.png' %}" alt="Default Avatar"
+                                     style="width:100%; height:100%; object-fit:cover;">
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data" class="row g-3">
+                        {% csrf_token %}
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="{{ form.full_name.id_for_label }}">Full Name</label>
+                            {{ form.full_name }}
+                            {{ form.full_name.errors }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
+                            {{ form.email }}
+                            {{ form.email.errors }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="{{ form.gender.id_for_label }}">Gender</label>
+                            {{ form.gender }}
+                            {{ form.gender.errors }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="{{ form.dob.id_for_label }}">Date of Birth</label>
+                            {{ form.dob }}
+                            {{ form.dob.errors }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="{{ form.phone.id_for_label }}">Phone</label>
+                            {{ form.phone }}
+                            {{ form.phone.errors }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="{{ form.city.id_for_label }}">City</label>
+                            {{ form.city }}
+                            {{ form.city.errors }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="{{ form.country.id_for_label }}">Country</label>
+                            {{ form.country }}
+                            {{ form.country.errors }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="{{ form.profile_picture.id_for_label }}">Profile Picture</label>
+                            {{ form.profile_picture }}
+                            {{ form.profile_picture.errors }}
+                            <small class="text-muted d-block mt-1">Accepted: JPG, PNG, GIF</small>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label" for="{{ form.bio.id_for_label }}">Bio</label>
+                            {{ form.bio }}
+                            {{ form.bio.errors }}
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-success w-100">Update Profile</button>
+                        </div>
+                    </form>
+                </div> <!-- /card-body -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

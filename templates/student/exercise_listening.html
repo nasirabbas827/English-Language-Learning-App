@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ exercise.lesson.title }} - Listening Exercise{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h3>Listening Exercise: {{ exercise.lesson.title }}</h3>
+    <p>{{ exercise.instructions }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Mark as Heard / Complete</button>
+    </form>
+</div>
+{% endblock %}

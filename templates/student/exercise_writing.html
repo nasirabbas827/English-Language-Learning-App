@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ exercise.lesson.title }} - Writing Exercise{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h3>Writing Exercise: {{ exercise.lesson.title }}</h3>
+    <p>{{ exercise.instructions }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="essay_text">Your Essay:</label>
+            <textarea id="essay_text" name="essay_text" rows="10" class="form-control"></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Submit Essay</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ exercise.lesson.title }} - Speaking Exercise{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h3>Speaking Exercise: {{ exercise.lesson.title }}</h3>
+    <p>{{ exercise.instructions }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label>Recognized Speech (preview):</label>
+            <p class="form-control" style="background-color:#e9ecef;">{{ spoken_text }}</p>
+            <input type="hidden" name="spoken_text" value="{{ spoken_text }}">
+        </div>
+
+        <button type="submit" class="btn btn-success">Submit Speaking Answer</button>
+    </form>
+
+    <p class="text-muted mt-3">Your spoken text is also printed in the terminal for debugging.</p>
+</div>
+{% endblock %}

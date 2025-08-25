@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Attempt Exercise - {{ exercise.lesson.title }}{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <!-- Exercise Header Section -->
+    <div class="row mb-4">
+        <div class="col">
+            <a href="{% url 'lesson_detail' exercise.lesson.pk %}" class="btn btn-outline-secondary mb-3">
+                <i class="fas fa-arrow-left me-2"></i>Back to Lesson
+            </a>
+            <h2 class="text-primary"><i class="fas fa-tasks me-2"></i>Attempt Exercise: {{ exercise.lesson.title }}</h2>
+            <p class="text-muted fs-5">{{ exercise.instructions }}</p>
+        </div>
+    </div>
+
+    <!-- Exercise Questions Section -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h5 class="card-title text-primary"><i class="fas fa-question-circle me-2"></i>Questions</h5>
+            <hr class="my-3">
+            <form method="post">
+                {% csrf_token %}
+                {% for q in questions %}
+                    <div class="mb-5">
+                        <h5 class="fw-bold">Q{{ forloop.counter }}: {{ q.question_text }}</h5>
+
+                        <!-- Multiple Choice Question -->
+                        {% if q.question_type == "mcq" %}
+                            <div class="mt-3">
+                                {% for opt in q.options.all %}
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio"
+                                               name="question_{{ q.id }}" id="opt{{ opt.id }}" value="{{ opt.id }}">
+                                        <label class="form-check-label" for="opt{{ opt.id }}">
+                                            {{ opt.option_text }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                        <!-- Fill in the Blank Question -->
+                        {% elif q.question_type == "fill_blank" %}
+                            <input type="text" class="form-control mt-3"
+                                   name="question_{{ q.id }}" placeholder="Type your answer">
+
+                        <!-- Matching Question -->
+                        {% elif q.question_type == "match" %}
+                            <textarea class="form-control mt-3" name="question_{{ q.id }}"
+                                      placeholder="Write matching answer" rows="4"></textarea>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-check-circle me-2"></i>Submit Answers
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
