@@ -2,61 +2,199 @@
 {% block title %}Attempt Exercise - {{ exercise.lesson.title }}{% endblock %}
 {% block content %}
 <div class="container mt-5">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'student_dashboard' %}" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'lesson_detail' exercise.lesson.pk %}" class="text-decoration-none">{{ exercise.lesson.title }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Exercise</li>
+        </ol>
+    </nav>
+
     <!-- Exercise Header Section -->
-    <div class="row mb-4">
-        <div class="col">
-            <a href="{% url 'lesson_detail' exercise.lesson.pk %}" class="btn btn-outline-secondary mb-3">
-                <i class="fas fa-arrow-left me-2"></i>Back to Lesson
-            </a>
-            <h2 class="text-primary"><i class="fas fa-tasks me-2"></i>Attempt Exercise: {{ exercise.lesson.title }}</h2>
-            <p class="text-muted fs-5">{{ exercise.instructions }}</p>
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-8">
+            <h2 style="color: #00d4b4; font-weight: 600;">Exercise: {{ exercise.lesson.title }}</h2>
+            <p class="text-muted fs-5">{{ exercise.lesson.get_skill_level_display }} • {{ exercise.lesson.get_category_display }}</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <p class="text-muted mb-0">Questions: {{ questions|length }}</p>
         </div>
     </div>
 
-    <!-- Exercise Questions Section -->
+    <!-- Instructions Section -->
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-body">
+            <h4 class="mb-3" style="color: #00d4b4;">Instructions</h4>
+            <hr class="my-3">
+            <p class="text-muted bg-light p-3 rounded">{{ exercise.instructions|linebreaksbr }}</p>
+        </div>
+    </div>
+
+    <!-- Questions Section -->
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            <h5 class="card-title text-primary"><i class="fas fa-question-circle me-2"></i>Questions</h5>
+            <h4 class="mb-3" style="color: #00d4b4;">Questions ({{ questions|length }})</h4>
             <hr class="my-3">
-            <form method="post">
+            <form method="post" id="quizForm">
                 {% csrf_token %}
                 {% for q in questions %}
-                    <div class="mb-5">
-                        <h5 class="fw-bold">Q{{ forloop.counter }}: {{ q.question_text }}</h5>
+                    <div class="mb-5 p-3 bg-light rounded" style="transition: transform 0.3s ease;">
+                        <h5 class="fw-bold">
+                            <i class="fas {% if q.question_type == 'mcq' %}fa-check-square{% elif q.question_type == 'fill_blank' %}fa-pen{% else %}fa-link{% endif %} me-2"></i>
+                            Q{{ forloop.counter }}: {{ q.question_text }}
+                        </h5>
 
                         <!-- Multiple Choice Question -->
                         {% if q.question_type == "mcq" %}
                             <div class="mt-3">
-                                {% for opt in q.options.all %}
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="radio"
-                                               name="question_{{ q.id }}" id="opt{{ opt.id }}" value="{{ opt.id }}">
-                                        <label class="form-check-label" for="opt{{ opt.id }}">
-                                            {{ opt.option_text }}
-                                        </label>
-                                    </div>
-                                {% endfor %}
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio"
+                                           name="question_{{ q.id }}" id="q{{ q.id }}_opt1"
+                                           value="{{ q.option1 }}" required
+                                           data-bs-toggle="tooltip" title="Select this option">
+                                    <label class="form-check-label" for="q{{ q.id }}_opt1">{{ q.option1 }}</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio"
+                                           name="question_{{ q.id }}" id="q{{ q.id }}_opt2"
+                                           value="{{ q.option2 }}" required
+                                           data-bs-toggle="tooltip" title="Select this option">
+                                    <label class="form-check-label" for="q{{ q.id }}_opt2">{{ q.option2 }}</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio"
+                                           name="question_{{ q.id }}" id="q{{ q.id }}_opt3"
+                                           value="{{ q.option3 }}" required
+                                           data-bs-toggle="tooltip" title="Select this option">
+                                    <label class="form-check-label" for="q{{ q.id }}_opt3">{{ q.option3 }}</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio"
+                                           name="question_{{ q.id }}" id="q{{ q.id }}_opt4"
+                                           value="{{ q.option4 }}" required
+                                           data-bs-toggle="tooltip" title="Select this option">
+                                    <label class="form-check-label" for="q{{ q.id }}_opt4">{{ q.option4 }}</label>
+                                </div>
                             </div>
 
                         <!-- Fill in the Blank Question -->
                         {% elif q.question_type == "fill_blank" %}
                             <input type="text" class="form-control mt-3"
-                                   name="question_{{ q.id }}" placeholder="Type your answer">
+                                   name="question_{{ q.id }}" placeholder="Type your answer"
+                                   required data-bs-toggle="tooltip" title="Enter your answer here">
 
                         <!-- Matching Question -->
                         {% elif q.question_type == "match" %}
                             <textarea class="form-control mt-3" name="question_{{ q.id }}"
-                                      placeholder="Write matching answer" rows="4"></textarea>
+                                      placeholder="Write matching answer" rows="4"
+                                      required data-bs-toggle="tooltip" title="Enter your matching answer"></textarea>
+                            <div class="form-text text-muted mt-2">
+                                <span id="charCount_{{ q.id }}">0</span> characters
+                            </div>
                         {% endif %}
                     </div>
+                {% empty %}
+                    <p class="text-center text-muted py-4">No questions available for this exercise.</p>
                 {% endfor %}
 
                 <!-- Submit Button -->
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-check-circle me-2"></i>Submit Answers
-                </button>
+                <div class="d-flex gap-3">
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#previewModal" data-bs-toggle="tooltip" title="Preview your answers before submission">
+                        Preview Answers
+                    </button>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal" data-bs-toggle="tooltip" title="Submit your answers for review">
+                        Submit Answers
+                    </button>
+                </div>
             </form>
         </div>
     </div>
+
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="previewModalLabel">Answer Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="previewContent"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Confirm Submission</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to submit your answers? Once submitted, you cannot edit them.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="document.getElementById('quizForm').submit();">Confirm Submission</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- JavaScript for Character Counter, Preview, and Validation -->
+<script>
+    // Character Counter for Matching Questions
+    document.querySelectorAll('textarea[name^="question_"]').forEach(textarea => {
+        const id = textarea.name.replace('question_', '');
+        const charCount = document.getElementById(`charCount_${id}`);
+        textarea.addEventListener('input', () => {
+            charCount.textContent = textarea.value.length;
+        });
+    });
+
+    // Preview Modal Content
+    const previewModal = document.getElementById('previewModal');
+    previewModal.addEventListener('show.bs.modal', () => {
+        const previewContent = document.getElementById('previewContent');
+        let content = '';
+        const form = document.getElementById('quizForm');
+        const questions = {{ questions|length }};
+        for (let i = 0; i < questions; i++) {
+            const q = document.querySelector(`[name="question_${form.elements['question_' + (i + 1)].name.split('_')[1]}"]:checked`) || 
+                      document.querySelector(`[name="question_${form.elements['question_' + (i + 1)].name.split('_')[1]}"]`);
+            content += `<p><strong>Q${i + 1}:</strong> ${q ? q.value : 'Not answered'}</p>`;
+        }
+        previewContent.innerHTML = content || '<p class="text-muted">No answers provided yet.</p>';
+    });
+
+    // Form Validation
+    document.getElementById('quizForm').addEventListener('submit', (e) => {
+        const inputs = document.querySelectorAll('#quizForm input[required], #quizForm textarea[required]');
+        let allAnswered = true;
+        inputs.forEach(input => {
+            if (input.type === 'radio') {
+                const group = document.querySelectorAll(`input[name="${input.name}"]:checked`);
+                if (group.length === 0) allAnswered = false;
+            } else if (!input.value) {
+                allAnswered = false;
+            }
+        });
+        if (!allAnswered) {
+            e.preventDefault();
+            alert('Please answer all questions before submitting.');
+        }
+    });
+
+    // Bootstrap Tooltip Initialization
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+</script>
 {% endblock %}

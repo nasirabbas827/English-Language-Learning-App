@@ -2,16 +2,15 @@
 {% block title %}Teacher Dashboard{% endblock %}
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4 text-primary"><i class="fas fa-chalkboard-teacher me-2"></i>Teacher Dashboard</h2>
+    <h2 class="mb-4" style="color: #00d4b4; font-weight: 600;">Teacher Dashboard</h2>
     <p class="text-muted fs-5">Welcome, {{ full_name }}!</p>
     <hr class="my-4">
 
     <!-- Summary Cards -->
     <div class="row g-4 mb-5">
-        <div class="col-md-4">
+        <div class="col-md-3 col-sm-6">
             <div class="card shadow-sm border-0 bg-primary text-white h-100">
                 <div class="card-body d-flex align-items-center">
-                    <i class="fas fa-book-open fa-2x me-3"></i>
                     <div>
                         <h5 class="card-title mb-1">Total Lessons</h5>
                         <p class="card-text fs-4 mb-0">{{ total_lessons }}</p>
@@ -19,10 +18,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3 col-sm-6">
             <div class="card shadow-sm border-0 bg-success text-white h-100">
                 <div class="card-body d-flex align-items-center">
-                    <i class="fas fa-tasks fa-2x me-3"></i>
                     <div>
                         <h5 class="card-title mb-1">Total Exercises</h5>
                         <p class="card-text fs-4 mb-0">{{ total_exercises }}</p>
@@ -30,10 +28,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3 col-sm-6">
             <div class="card shadow-sm border-0 bg-info text-white h-100">
                 <div class="card-body d-flex align-items-center">
-                    <i class="fas fa-users fa-2x me-3"></i>
                     <div>
                         <h5 class="card-title mb-1">Total Students</h5>
                         <p class="card-text fs-4 mb-0">{{ total_students }}</p>
@@ -41,61 +38,185 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card shadow-sm border-0 bg-warning text-white h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div>
+                        <h5 class="card-title mb-1">Active Sessions</h5>
+                        <p class="card-text fs-4 mb-0">{{ active_sessions }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Overview Chart -->
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-body">
+            <h4 class="mb-4" style="color: #00d4b4;">Progress Overview</h4>
+            <canvas id="progressChart" height="100"></canvas>
+        </div>
     </div>
 
     <!-- Students Progress Table -->
-    <h4 class="mb-3 text-primary"><i class="fas fa-chart-line me-2"></i>Students Progress</h4>
-    <div class="table-responsive shadow-sm rounded">
-        <table class="table table-hover table-bordered align-middle">
-            <thead class="table-primary">
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Student Name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Lesson</th>
-                    <th scope="col">Exercise</th>
-                    <th scope="col">Score</th>
-                    <th scope="col">Completed</th>
-                    <th scope="col">Submitted At</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for data in student_data %}
-                    {% for prog in data.progress %}
-                        <tr>
-                            <td>{{ forloop.parentloop.counter }}</td>
-                            <td>{{ data.student.full_name }}</td>
-                            <td>{{ data.student.email }}</td>
-                            <td>{{ prog.lesson.title }}</td>
-                            <td>
-                                {% if prog.exercise %}
-                                    {{ prog.exercise.type }}
-                                {% else %}
-                                    <span class="text-muted">N/A</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ prog.score|default:"-" }}%</td>
-                            <td>
-                                {% if prog.completed %}
-                                    <i class="fas fa-check-circle text-success"></i>
-                                {% else %}
-                                    <i class="fas fa-times-circle text-danger"></i>
-                                {% endif %}
-                            </td>
-                            <td>{{ prog.completed_at|date:"Y-m-d H:i" }}</td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="8" class="text-center text-muted">No progress for {{ data.student.full_name }}</td>
-                        </tr>
+    <div class="table-container">
+        <h4 class="mb-3" style="color: #00d4b4;">Students Progress</h4>
+        <div class="d-flex justify-content-between mb-3">
+            <div>
+                <input type="text" id="tableSearch" class="form-control" placeholder="Search students..." style="max-width: 200px;">
+            </div>
+            <div>
+                <select id="tableFilter" class="form-control" style="max-width: 200px;">
+                    <option value="">All Lessons</option>
+                    {% for lesson in lessons %}
+                        <option value="{{ lesson.title }}">{{ lesson.title }}</option>
                     {% endfor %}
-                {% endfor %}
-            </tbody>
-        </table>
+                </select>
+            </div>
+        </div>
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-hover table-bordered align-middle" id="progressTable">
+                <thead style="background-color: #1a1a1a; color: #ffffff;">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Student Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Lesson</th>
+                        <th scope="col">Exercise</th>
+                        <th scope="col">Score</th>
+                        <th scope="col">Completed</th>
+                        <th scope="col">Submitted At</th>
+                        <th scope="col">Badges</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in student_data %}
+                        {% for prog in data.progress %}
+                            <tr>
+                                <td>{{ forloop.parentloop.counter }}</td>
+                                <td>{{ data.student.full_name }}</td>
+                                <td>{{ data.student.email }}</td>
+                                <td>{{ prog.lesson.title }}</td>
+                                <td>
+                                    {% if prog.exercise %}
+                                        {{ prog.exercise.type }}
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ prog.score|default:"-" }}%</td>
+                                <td>
+                                    {% if prog.completed %}
+                                        <i class="fas fa-check-circle text-success"></i>
+                                    {% else %}
+                                        <i class="fas fa-times-circle text-danger"></i>
+                                    {% endif %}
+                                </td>
+                                <td>{{ prog.completed_at|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    {% for badge in data.student.studentbadge_set.all %}
+                                        <span class="badge bg-secondary me-1">{{ badge.badge.name }}</span>
+                                    {% empty %}
+                                        <span class="text-muted">None</span>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="9" class="text-center text-muted">No progress for {{ data.student.full_name }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <a href="{% url 'teacher_writing_submissions' %}" class="btn btn-primary mt-4">
-        <i class="fas fa-file-alt me-2"></i>View Writing Submissions
-    </a>
+    <!-- Recent Activity -->
+    <div class="card shadow-sm border-0 mt-5">
+        <div class="card-body">
+            <h4 class="mb-4" style="color: #00d4b4;">Recent Activity</h4>
+            <ul class="list-group list-group-flush">
+                {% for submission in recent_submissions %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ submission.user.full_name }}</strong> submitted a {{ submission.exercise.type }} exercise
+                            <small class="text-muted">({{ submission.submitted_at|timesince }} ago)</small>
+                        </div>
+                        <a href="{% url 'teacher_writing_submissions' %}?submission_id={{ submission.id }}" class="btn btn-sm btn-primary">Review</a>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">No recent submissions</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="d-flex justify-content-start gap-3 mt-4">
+        <a href="{% url 'teacher_writing_submissions' %}" class="btn btn-primary">View Writing Submissions</a>
+        <a href="{% url 'lesson_create' %}" class="btn btn-secondary">Create New Lesson</a>
+        <a href="{% url 'session_create' %}" class="btn btn-secondary">Schedule Live Session</a>
+    </div>
 </div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+    // Progress Chart
+    const ctx = document.getElementById('progressChart').getContext('2d');
+    const progressChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [{% for data in student_data %}'{{ data.student.full_name }}',{% endfor %}],
+            datasets: [{
+                label: 'Average Score (%)',
+                data: [{% for data in student_data %}{{ data.avg_score }},{% endfor %}],
+                backgroundColor: '#00d4b4',
+                borderColor: '#00b89a',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Score (%)'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    // Table Search and Filter
+    const searchInput = document.getElementById('tableSearch');
+    const filterSelect = document.getElementById('tableFilter');
+    const table = document.getElementById('progressTable');
+    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+    function filterTable() {
+        const searchText = searchInput.value.toLowerCase();
+        const filterValue = filterSelect.value.toLowerCase();
+
+        for (let row of rows) {
+            const studentName = row.cells[1].textContent.toLowerCase();
+            const lessonTitle = row.cells[3].textContent.toLowerCase();
+            const shouldShow = (studentName.includes(searchText) || searchText === '') &&
+                               (lessonTitle.includes(filterValue) || filterValue === '');
+            row.style.display = shouldShow ? '' : 'none';
+        }
+    }
+
+    searchInput.addEventListener('input', filterTable);
+    filterSelect.addEventListener('change', filterTable);
+</script>
 {% endblock %}

@@ -2,50 +2,140 @@
 {% block title %}Writing Submissions - English Language Learning App{% endblock %}
 {% block content %}
 <div class="container mt-5">
-    <div class="row mb-4">
-        <div class="col">
-            <h2 class="text-primary"><i class="fas fa-file-alt me-2"></i>Writing Submissions</h2>
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h2 style="color: #00d4b4; font-weight: 600;">Writing Submissions</h2>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <a href="{% url 'teacher_writing_submissions' %}?download_csv=1" class="btn btn-secondary">
+                Download as CSV
+            </a>
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover table-bordered align-middle">
-                            <thead class="table-primary">
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Student</th>
-                                    <th scope="col">Lesson</th>
-                                    <th scope="col">Exercise</th>
-                                    <th scope="col">Essay Text</th>
-                                    <th scope="col">Spelling Feedback</th>
-                                    <th scope="col">Submitted At</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for sub in submissions %}
-                                <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>{{ sub.user.full_name }}</td>
-                                    <td>{{ sub.exercise.lesson.title }}</td>
-                                    <td>{{ sub.exercise.type }}</td>
-                                    <td>{{ sub.essay_text|truncatechars:50 }}</td>
-                                    <td>{{ sub.spelling_feedback|linebreaksbr|truncatechars:50 }}</td>
-                                    <td>{{ sub.submitted_at|date:"Y-m-d H:i" }}</td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="8" class="text-center text-muted">No writing submissions yet.</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+
+    <!-- Search and Filter -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <input type="text" id="tableSearch" class="form-control" placeholder="Search by student or essay..." value="{{ search_query }}">
+        </div>
+        <div class="col-md-6">
+            <select id="tableFilter" class="form-control">
+                <option value="">All Lessons</option>
+                {% for lesson in lessons %}
+                    <option value="{{ lesson.title }}" {% if lesson_filter == lesson.title %}selected{% endif %}>{{ lesson.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Submissions Table -->
+    <div class="table-container">
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-hover table-bordered align-middle" id="submissionsTable">
+                <thead style="background-color: #1a1a1a; color: #ffffff;">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Student</th>
+                        <th scope="col">Lesson</th>
+                        <th scope="col">Exercise</th>
+                        <th scope="col">Essay Text</th>
+                        <th scope="col">Spelling Feedback</th>
+                        <th scope="col">Grammar Feedback</th>
+                        <th scope="col">Submitted At</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sub in submissions %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ sub.user.full_name }}</td>
+                            <td>{{ sub.exercise.lesson.title }}</td>
+                            <td>{{ sub.exercise.type }}</td>
+                            <td>{{ sub.essay_text|truncatechars:50 }}</td>
+                            <td>{{ sub.spelling_feedback|linebreaksbr|truncatechars:50|default:"-" }}</td>
+                            <td>{{ sub.grammar_feedback|linebreaksbr|truncatechars:50|default:"-" }}</td>
+                            <td>{{ sub.submitted_at|date:"Y-m-d H:i" }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#feedbackModal{{ sub.id }}">
+                                    View & Feedback
+                                </button>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted">No writing submissions yet.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Feedback Modals -->
+    {% for sub in submissions %}
+        <div class="modal fade" id="feedbackModal{{ sub.id }}" tabindex="-1" aria-labelledby="feedbackModalLabel{{ sub.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="feedbackModalLabel{{ sub.id }}">Submission by {{ sub.user.full_name }}</h5>
+                        <button type="button" class="btn-close" data-bs-toggle="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>Lesson: {{ sub.exercise.lesson.title }}</h6>
+                        <h6>Exercise: {{ sub.exercise.type }}</h6>
+                        <p><strong>Submitted At:</strong> {{ sub.submitted_at|date:"Y-m-d H:i" }}</p>
+                        <hr>
+                        <h6>Essay Text</h6>
+                        <p class="border p-3 rounded bg-light">{{ sub.essay_text|linebreaksbr }}</p>
+                        <h6>Provide Feedback</h6>
+                        <form method="post" action="{% url 'teacher_writing_submissions' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="submission_id" value="{{ sub.id }}">
+                            <div class="form-group">
+                                <label for="spelling_feedback_{{ sub.id }}" class="form-label">Spelling Feedback</label>
+                                <textarea id="spelling_feedback_{{ sub.id }}" name="spelling_feedback" class="form-control" rows="4">{{ sub.spelling_feedback|default:"" }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="grammar_feedback_{{ sub.id }}" class="form-label">Grammar Feedback</label>
+                                <textarea id="grammar_feedback_{{ sub.id }}" name="grammar_feedback" class="form-control" rows="4">{{ sub.grammar_feedback|default:"" }}</textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endfor %}
 </div>
+
+<!-- JavaScript for Search and Filter -->
+<script>
+    const searchInput = document.getElementById('tableSearch');
+    const filterSelect = document.getElementById('tableFilter');
+    const table = document.getElementById('submissionsTable');
+    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+    function filterTable() {
+        const searchText = searchInput.value.toLowerCase();
+        const filterValue = filterSelect.value.toLowerCase();
+
+        for (let row of rows) {
+            const studentName = row.cells[1].textContent.toLowerCase();
+            const lessonTitle = row.cells[2].textContent.toLowerCase();
+            const essayText = row.cells[4].textContent.toLowerCase();
+            const shouldShow = (studentName.includes(searchText) || essayText.includes(searchText) || searchText === '') &&
+                               (lessonTitle.includes(filterValue) || filterValue === '');
+            row.style.display = shouldShow ? '' : 'none';
+        }
+    }
+
+    searchInput.addEventListener('input', filterTable);
+    filterSelect.addEventListener('change', () => {
+        window.location.href = `{% url 'teacher_writing_submissions' %}?lesson=${encodeURIComponent(filterSelect.value)}&search=${encodeURIComponent(searchInput.value)}`;
+    });
+</script>
 {% endblock %}

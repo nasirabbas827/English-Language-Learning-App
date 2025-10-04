@@ -38,16 +38,27 @@ urlpatterns = [
     path('exercises/add/', views.exercise_create, name='exercise_create'),
     path('exercises/<int:pk>/edit/', views.exercise_update, name='exercise_update'),
     path('exercises/<int:pk>/delete/', views.exercise_delete, name='exercise_delete'),
+# Quiz URLs
+path('quiz/questions/', views.quiz_list, name='quiz_list'),
+path('quiz/questions/add/', views.quiz_create, name='quiz_create'),
+path('quiz/questions/<int:pk>/edit/', views.quiz_update, name='quiz_update'),
+path('quiz/questions/<int:pk>/delete/', views.quiz_delete, name='quiz_delete'),
+path('leaderboard/', views.leaderboard, name='leaderboard'),
 
-    # Quiz Questions
-    path('quiz/questions/', views.quizquestion_list, name='quizquestion_list'),
-    path('quiz/questions/add/', views.quizquestion_create, name='quizquestion_create'),
-    path('quiz/questions/<int:pk>/edit/', views.quizquestion_update, name='quizquestion_update'),
-    path('quiz/questions/<int:pk>/delete/', views.quizquestion_delete, name='quizquestion_delete'),
+path('sessions/', views.session_list, name='session_list'),
+path('sessions/create/', views.session_create, name='session_create'),
+path('sessions/<int:pk>/edit/', views.session_update, name='session_update'),
+path('sessions/<int:pk>/delete/', views.session_delete, name='session_delete'),
+path('student/sessions/', views.student_sessions, name='student_sessions'),
 
-    # Quiz Options
-    path('quiz/options/', views.quizoption_list, name='quizoption_list'),
-    path('quiz/options/add/', views.quizoption_create, name='quizoption_create'),
-    path('quiz/options/<int:pk>/edit/', views.quizoption_update, name='quizoption_update'),
-    path('quiz/options/<int:pk>/delete/', views.quizoption_delete, name='quizoption_delete'),
+path('threads/', views.thread_list, name='thread_list'),
+path('threads/create/', views.thread_create, name='thread_create'),
+path('threads/<int:pk>/delete/', views.thread_delete, name='thread_delete'),
+path('threads/<int:pk>/', views.thread_detail, name='thread_detail'),
+path('threads/<int:thread_id>/post/create/', views.post_create, name='post_create'),
+path('posts/<int:pk>/delete/', views.post_delete, name='post_delete'),
+path('chat/', views.peer_chat, name='peer_chat'),
+path('chat/<int:user_id>/', views.peer_chat, name='peer_chat'),
+
+
 ]

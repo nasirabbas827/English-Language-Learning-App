@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Quiz Questions - English Language Learning App{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
     <div class="row mb-4">
@@ -9,7 +10,9 @@
     </div>
     <div class="row mb-4">
         <div class="col">
-            <a href="{% url 'quizquestion_create' %}" class="btn btn-primary"><i class="fas fa-plus-circle me-2"></i>Add Question</a>
+            <a href="{% url 'quiz_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-2"></i>Add Question
+            </a>
         </div>
     </div>
     <div class="row">
@@ -23,6 +26,10 @@
                                     <th scope="col">Exercise</th>
                                     <th scope="col">Type</th>
                                     <th scope="col">Question</th>
+                                    <th scope="col">Option 1</th>
+                                    <th scope="col">Option 2</th>
+                                    <th scope="col">Option 3</th>
+                                    <th scope="col">Option 4</th>
                                     <th scope="col">Correct Answer</th>
                                     <th scope="col">Actions</th>
                                 </tr>
@@ -33,15 +40,24 @@
                                     <td>{{ q.exercise.lesson.title }}</td>
                                     <td>{{ q.get_question_type_display }}</td>
                                     <td>{{ q.question_text|truncatechars:50 }}</td>
-                                    <td>{{ q.correct_answer|truncatechars:30 }}</td>
+                                    <td>{{ q.option1 }}</td>
+                                    <td>{{ q.option2 }}</td>
+                                    <td>{{ q.option3 }}</td>
+                                    <td>{{ q.option4 }}</td>
+                                    <td>{{ q.correct_answer }}</td>
                                     <td>
-                                        <a href="{% url 'quizquestion_update' q.pk %}" class="btn btn-sm btn-warning me-2"><i class="fas fa-edit me-1"></i>Edit</a>
-                                        <a href="{% url 'quizquestion_delete' q.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this question?');"><i class="fas fa-trash me-1"></i>Delete</a>
+                                        <a href="{% url 'quiz_update' q.pk %}" class="btn btn-sm btn-warning me-2">
+                                            <i class="fas fa-edit me-1"></i>Edit
+                                        </a>
+                                        <a href="{% url 'quiz_delete' q.pk %}" class="btn btn-sm btn-danger" 
+                                           onclick="return confirm('Delete this question?');">
+                                            <i class="fas fa-trash me-1"></i>Delete
+                                        </a>
                                     </td>
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="5" class="text-center text-muted">No questions found.</td>
+                                    <td colspan="9" class="text-center text-muted">No questions found.</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

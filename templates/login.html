@@ -1,46 +1,53 @@
 {% extends "base.html" %}
 {% block title %}Login - English Language Learning App{% endblock %}
 {% block content %}
-<div class="container mt-5">
+<div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white d-flex align-items-center">
-                    <i class="fas fa-sign-in-alt me-2"></i>
-                    <h2 class="card-title mb-0">Login</h2>
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header" style="background-color: #00d4b4; color: #fff;">
+                    <h2 class="card-title mb-0 text-center" style="font-weight: 600;">Sign In</h2>
                 </div>
-                <div class="card-body">
-                    <form method="post">
+                <div class="card-body p-4">
+                    <p class="text-center text-muted mb-4">Welcome back! Log in to continue your English learning journey.</p>
+                    {% if form.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <p>{{ field.label }}: {{ error }}</p>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <form method="post" class="row g-3">
                         {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="email" class="form-label">
-                                <i class="fas fa-envelope me-2"></i>Email
-                            </label>
-                            <input type="email" name="email" id="email" class="form-control" required>
+                        <div class="col-12">
+                            <label for="{{ form.email.id_for_label }}" class="form-label fw-bold" style="color: #1a1a1a;">Email</label>
+                            <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" class="form-control" value="{{ form.email.value|default_if_none:'' }}" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">
-                                <i class="fas fa-lock me-2"></i>Password
-                            </label>
-                            <input type="password" name="password" id="password" class="form-control" required>
+                        <div class="col-12">
+                            <label for="{{ form.password.id_for_label }}" class="form-label fw-bold" style="color: #1a1a1a;">Password</label>
+                            <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}" class="form-control" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="role" class="form-label">
-                                <i class="fas fa-user-tag me-2"></i>User Type
-                            </label>
-                            <select name="role" id="role" class="form-control" required>
-                                <option value="teacher">Teacher</option>
-                                <option value="student">Student</option>
+                        <div class="col-12">
+                            <label for="{{ form.role.id_for_label }}" class="form-label fw-bold" style="color: #1a1a1a;">User Type</label>
+                            <select name="{{ form.role.name }}" id="{{ form.role.id_for_label }}" class="form-control" required>
+                                {% for value, label in form.fields.role.choices %}
+                                    <option value="{{ value }}" {% if form.role.value == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-sign-in-alt me-2"></i>Login
-                        </button>
+                        <div class="col-12">
+                            <button type="submit" class="btn w-100" style="background-color: #00d4b4; color: #fff; transition: background-color 0.3s ease;" onmouseover="this.style.backgroundColor='#00b89c'" onmouseout="this.style.backgroundColor='#00d4b4'">Sign In</button>
+                        </div>
+                        <div class="col-12 text-center mt-3">
+                            <p class="text-muted">Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none" style="color: #00d4b4;">Create one here</a>.</p>
+                        </div>
                     </form>
                 </div>
-            </div>
-            <div class="text-center mt-3">
-                <a href="{% url 'register' %}">Create an account</a>
             </div>
         </div>
     </div>

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Leaderboard - English Language Learning App{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary">
+        <i class="fas fa-trophy me-2"></i>Leaderboard
+    </h2>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Student</th>
+                        <th>Total Score</th>
+                        <th>Completed Exercises</th>
+                        <th>Badges (Points)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if leaderboard %}
+                        {% for student in leaderboard %}
+                            <tr {% if student.id == current_student_id %}class="table-success"{% endif %}>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ student.full_name }}</td>
+                                <td>{{ student.total_score|default:0 }}</td>
+                                <td>{{ student.completed_exercises|default:0 }}</td>
+                                <td>
+                                    {% if student.studentbadge_set.all %}
+                                        {% for sb in student.studentbadge_set.all %}
+                                            <span class="badge bg-primary mb-1">
+                                                {{ sb.badge.name }} ({{ sb.badge.points_required }} pts)
+                                            </span><br>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-muted">No badges yet</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">
+                                No student data available.
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

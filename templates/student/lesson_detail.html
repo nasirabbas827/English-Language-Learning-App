@@ -2,86 +2,140 @@
 {% block title %}{{ lesson.title }} - English Language Learning App{% endblock %}
 {% block content %}
 <div class="container mt-5">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'student_dashboard' %}" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ lesson.title }}</li>
+        </ol>
+    </nav>
+
     <!-- Lesson Header Section -->
-    <div class="row mb-4">
-        <div class="col">
-            <a href="{% url 'student_dashboard' %}" class="btn btn-outline-secondary mb-3">
-                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-            </a>
-            <h2 class="text-primary"><i class="fas fa-book-open me-2"></i>{{ lesson.title }}</h2>
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-8">
+            <h2 style="color: #00d4b4; font-weight: 600;">{{ lesson.title }}</h2>
             <p class="text-muted fs-5">{{ lesson.get_skill_level_display }} • {{ lesson.get_category_display }}</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            {% if progress_percent is not None %}
+                <div class="progress" style="height: 20px;" data-bs-toggle="tooltip" title="{{ progress_percent }}% complete">
+                    <div class="progress-bar bg-success" role="progressbar"
+                         style="width: {{ progress_percent }}%;"
+                         aria-valuenow="{{ progress_percent }}" aria-valuemin="0" aria-valuemax="100">
+                        {{ progress_percent }}%
+                    </div>
+                </div>
+                <small class="text-muted">{{ completed_exercises }} of {{ total_exercises }} exercises completed</small>
+            {% else %}
+                <p class="text-muted small">No exercises available</p>
+            {% endif %}
         </div>
     </div>
 
     <!-- Lesson Description Section -->
-    <div class="row mb-5">
-        <div class="col">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h5 class="card-title text-primary"><i class="fas fa-info-circle me-2"></i>Lesson Overview</h5>
-                    <hr class="my-3">
-                    <p class="text-muted">{{ lesson.description }}</p>
-                </div>
-            </div>
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-body">
+            <h4 class="mb-3" style="color: #00d4b4;">Lesson Overview</h4>
+            <hr class="my-3">
+            <p class="text-muted">{{ lesson.description|linebreaksbr }}</p>
         </div>
     </div>
 
     <!-- Lesson Media Section -->
-    <div class="row mb-5">
-        <div class="col">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h5 class="card-title text-primary"><i class="fas fa-photo-video me-2"></i>Media</h5>
-                    <hr class="my-3">
-                    <ul class="list-group">
-                        {% for m in medias %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-body">
+            <h4 class="mb-3" style="color: #00d4b4;">Media</h4>
+            <hr class="my-3">
+            <div class="row g-4">
+                {% for m in medias %}
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm" style="transition: transform 0.3s ease;">
+                            <div class="card-body d-flex justify-content-between align-items-center">
                                 <div>
                                     <strong>{{ m.get_media_type_display }}</strong>
-                                    <div class="small text-muted text-truncate" style="max-width: 600px;">{{ m.media_url }}</div>
+                                    <div class="small text-muted text-truncate" style="max-width: 300px;">{{ m.media_url }}</div>
                                 </div>
                                 <div>
-                                    <a href="{{ m.media_url }}" target="_blank" class="btn btn-sm btn-primary">
-                                        <i class="fas fa-external-link-alt me-1"></i>Open
+                                    {% if m.media_type == 'video' or m.media_type == 'document' %}
+                                        <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#mediaModal{{ m.id }}" data-bs-toggle="tooltip" title="Preview {{ m.get_media_type_display }}">
+                                            Preview
+                                        </button>
+                                    {% endif %}
+                                    <a href="{{ m.media_url }}" target="_blank" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Open in new tab">
+                                        Open
                                     </a>
                                 </div>
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item text-center text-muted">No media for this lesson.</li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <p class="text-center text-muted">No media for this lesson.</p>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>
 
     <!-- Exercises Section -->
-    <div class="row">
-        <div class="col">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h5 class="card-title text-primary"><i class="fas fa-tasks me-2"></i>Exercises</h5>
-                    <hr class="my-3">
-                    <ul class="list-group">
-                        {% for ex in exercises %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>{{ ex.get_type_display }}</strong>
-                                    <div class="small text-muted text-truncate" style="max-width: 600px;">{{ ex.instructions|truncatechars:120 }}</div>
-                                </div>
-                                <div>
-                                    <a href="{% url 'exercise_attempt' ex.pk %}" class="btn btn-sm btn-success">
-                                        <i class="fas fa-play-circle me-1"></i>Start
-                                    </a>
-                                </div>
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item text-center text-muted">No exercises for this lesson.</li>
-                        {% endfor %}
-                    </ul>
-                </div>
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-body">
+            <h4 class="mb-3" style="color: #00d4b4;">Exercises</h4>
+            <hr class="my-3">
+            <div class="list-group">
+                {% for ex in exercises %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center mb-2 rounded" style="transition: transform 0.3s ease;">
+                        <div>
+                            <strong>{{ ex.get_type_display }}</strong>
+                            <div class="small text-muted text-truncate" style="max-width: 600px;">{{ ex.instructions|truncatechars:120 }}</div>
+                        </div>
+                        <div>
+                            <a href="{% url 'exercise_attempt' ex.pk %}" class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Start {{ ex.get_type_display }} exercise">
+                                Start
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="list-group-item text-center text-muted py-4">No exercises for this lesson.</div>
+                {% endfor %}
             </div>
         </div>
     </div>
+
+    <!-- Media Preview Modals -->
+    {% for m in medias %}
+        {% if m.media_type == 'video' or m.media_type == 'document' %}
+            <div class="modal fade" id="mediaModal{{ m.id }}" tabindex="-1" aria-labelledby="mediaModalLabel{{ m.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="mediaModalLabel{{ m.id }}">{{ m.get_media_type_display }}: {{ lesson.title }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {% if m.media_type == 'video' %}
+                                <video controls class="w-100" style="max-height: 400px;">
+                                    <source src="{{ m.media_url }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            {% elif m.media_type == 'document' %}
+                                <iframe src="{{ m.media_url }}" class="w-100" style="height: 400px;" frameborder="0"></iframe>
+                            {% endif %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <a href="{{ m.media_url }}" target="_blank" class="btn btn-primary">Open in New Tab</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
 </div>
+
+<!-- Bootstrap Tooltip Initialization -->
+<script>
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+</script>
 {% endblock %}

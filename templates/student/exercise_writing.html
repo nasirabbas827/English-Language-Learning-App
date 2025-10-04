@@ -1,17 +1,115 @@
 {% extends "base.html" %}
 {% block title %}{{ exercise.lesson.title }} - Writing Exercise{% endblock %}
 {% block content %}
-<div class="container mt-4">
-    <h3>Writing Exercise: {{ exercise.lesson.title }}</h3>
-    <p>{{ exercise.instructions }}</p>
+<div class="container mt-5">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'student_dashboard' %}" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'lesson_detail' exercise.lesson.pk %}" class="text-decoration-none">{{ exercise.lesson.title }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Writing Exercise</li>
+        </ol>
+    </nav>
 
-    <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="essay_text">Your Essay:</label>
-            <textarea id="essay_text" name="essay_text" rows="10" class="form-control"></textarea>
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col">
+            <h2 style="color: #00d4b4; font-weight: 600;">Writing Exercise: {{ exercise.lesson.title }}</h2>
+            <p class="text-muted fs-5">{{ exercise.lesson.get_skill_level_display }} • {{ exercise.lesson.get_category_display }}</p>
         </div>
-        <button type="submit" class="btn btn-success">Submit Essay</button>
-    </form>
+    </div>
+
+    <!-- Instructions Section -->
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-body">
+            <h4 class="mb-3" style="color: #00d4b4;">Instructions</h4>
+            <hr class="my-3">
+            <p class="text-muted bg-light p-3 rounded">{{ exercise.instructions|linebreaksbr }}</p>
+        </div>
+    </div>
+
+    <!-- Writing Form Section -->
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-body">
+            <h4 class="mb-3" style="color: #00d4b4;">Write Your Essay</h4>
+            <hr class="my-3">
+            <form method="post" id="essayForm">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="essay_text" class="form-label fw-bold">Your Essay</label>
+                    <textarea id="essay_text" name="essay_text" rows="10" class="form-control" placeholder="Write your essay here..." required></textarea>
+                    <div class="form-text text-muted mt-2">
+                        <span id="charCount">0</span> characters
+                    </div>
+                </div>
+                <div class="d-flex gap-3">
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#previewModal" data-bs-toggle="tooltip" title="Preview your essay before submission">
+                        Preview
+                    </button>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal" data-bs-toggle="tooltip" title="Submit your essay for review">
+                        Submit Essay
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="previewModalLabel">Essay Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="previewContent" class="border p-3 rounded bg-light"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Confirm Submission</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to submit your essay? Once submitted, you cannot edit it.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="document.getElementById('essayForm').submit();">Confirm Submission</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- JavaScript for Character Counter and Preview -->
+<script>
+    // Character Counter
+    const essayText = document.getElementById('essay_text');
+    const charCount = document.getElementById('charCount');
+    essayText.addEventListener('input', () => {
+        charCount.textContent = essayText.value.length;
+    });
+
+    // Preview Modal Content
+    const previewModal = document.getElementById('previewModal');
+    previewModal.addEventListener('show.bs.modal', () => {
+        const previewContent = document.getElementById('previewContent');
+        previewContent.innerHTML = essayText.value ? essayText.value.replace(/\n/g, '<br>') : 'No content entered yet.';
+    });
+
+    // Bootstrap Tooltip Initialization
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+</script>
 {% endblock %}

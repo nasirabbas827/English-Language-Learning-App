@@ -2,91 +2,154 @@
 {% block title %}Student Dashboard - English Language Learning App{% endblock %}
 {% block content %}
 <div class="container mt-5">
-    <div class="row mb-4">
-        <div class="col">
-            <h2 class="mb-1 text-primary"><i class="fas fa-user-graduate me-2"></i>Student Dashboard</h2>
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <h2 style="color: #00d4b4; font-weight: 600;">Student Dashboard</h2>
             <p class="text-muted fs-5">Welcome, {{ full_name }}!</p>
+        </div>
+        {% if all_lessons_completed %}
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'student_dashboard' %}?download_certificate=1" class="btn btn-primary">
+                    Download Course Completion Certificate
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Progress Overview -->
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-body">
+            <h4 class="mb-4" style="color: #00d4b4;">Your Progress</h4>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded">
+                        <h6>Lessons Completed</h6>
+                        <p class="fs-4 mb-0">{{ completed_lessons }} / {{ total_lessons }}</p>
+                        <div class="progress mt-2" style="height: 16px;" data-bs-toggle="tooltip" title="{{ lesson_progress_percent }}% complete">
+                            <div class="progress-bar bg-success" role="progressbar"
+                                 style="width: {{ lesson_progress_percent }}%;"
+                                 aria-valuenow="{{ lesson_progress_percent }}"
+                                 aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                        </div>
+                        <small class="text-muted">{{ lesson_progress_percent }}% complete</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded">
+                        <h6>Exercises Completed</h6>
+                        <p class="fs-4 mb-0">{{ completed_exercises }} / {{ total_exercises }}</p>
+                        <div class="progress mt-2" style="height: 16px;" data-bs-toggle="tooltip" title="{{ exercise_progress_percent }}% complete">
+                            <div class="progress-bar bg-success" role="progressbar"
+                                 style="width: {{ exercise_progress_percent }}%;"
+                                 aria-valuenow="{{ exercise_progress_percent }}"
+                                 aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                        </div>
+                        <small class="text-muted">{{ exercise_progress_percent }}% complete</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Earned Badges -->
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-body">
+            <h4 class="mb-4" style="color: #00d4b4;">Earned Badges</h4>
+            {% if earned_badges %}
+                <div class="d-flex flex-wrap">
+                    {% for sb in earned_badges %}
+                        <div class="text-center me-4 mb-4" style="width: 100px;" data-bs-toggle="tooltip" title="{{ sb.badge.description }}">
+                            {% if sb.badge.icon %}
+                                <img src="{{ sb.badge.icon.url }}" alt="{{ sb.badge.name }}" class="img-fluid rounded-circle mb-2" style="width: 70px; height: 70px; transition: transform 0.3s ease;">
+                            {% else %}
+                                <i class="fas fa-award fa-3x text-warning mb-2" style="transition: transform 0.3s ease;"></i>
+                            {% endif %}
+                            <small class="d-block text-muted">{{ sb.badge.name }}</small>
+                            {% if sb.badge.milestone_name %}
+                                <small class="d-block text-secondary">{{ sb.badge.milestone_name }}</small>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted small mb-0">No badges earned yet. Complete exercises to earn badges!</p>
+            {% endif %}
         </div>
     </div>
 
     <!-- Search / Filter Card -->
     <div class="card shadow-sm border-0 mb-5">
         <div class="card-body">
+            <h4 class="mb-4" style="color: #00d4b4;">Find Lessons</h4>
             <form method="get" class="row g-3 align-items-end">
                 <div class="col-md-4">
                     <label class="form-label fw-bold">Category</label>
-                    <select name="category" class="form-select">
+                    <select name="category" class="form-control">
                         <option value="">All Categories</option>
                         {% for val, label in CATEGORY_CHOICES %}
                             <option value="{{ val }}" {% if category_selected == val %}selected{% endif %}>{{ label }}</option>
                         {% endfor %}
                     </select>
                 </div>
-
                 <div class="col-md-4">
                     <label class="form-label fw-bold">Skill Level</label>
-                    <select name="skill_level" class="form-select">
+                    <select name="skill_level" class="form-control">
                         <option value="">All Levels</option>
                         {% for val, label in SKILL_CHOICES %}
                             <option value="{{ val }}" {% if skill_selected == val %}selected{% endif %}>{{ label }}</option>
                         {% endfor %}
                     </select>
                 </div>
-
                 <div class="col-md-3">
                     <label class="form-label fw-bold">Search</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-search"></i></span>
-                        <input type="search" name="q" class="form-control" placeholder="Search lesson title" value="{{ q }}">
-                    </div>
+                    <input type="search" name="q" class="form-control" placeholder="Search lesson title" value="{{ q }}">
                 </div>
-
                 <div class="col-md-1">
-                    <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter me-1"></i></button>
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Search Results -->
+    <!-- Search Results and Sidebar -->
     <div class="row">
         <div class="col-lg-8">
-            <h5 class="mb-3 text-primary"><i class="fas fa-book-open me-2"></i>Search Results ({{ lessons_with_progress|length }})</h5>
+            <h4 class="mb-3" style="color: #00d4b4;">Lessons ({{ lessons_with_progress|length }})</h4>
             <div class="list-group mb-5">
                 {% for item in lessons_with_progress %}
                     {% with lesson=item.lesson percent=item.percent %}
-                    <div class="list-group-item shadow-sm mb-3 rounded">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-1 fw-bold">{{ lesson.title }}</h6>
-                                <small class="text-muted">
-                                    {{ lesson.get_skill_level_display }} • {{ lesson.get_category_display }}
-                                </small>
-                                <p class="mb-0 mt-2 text-muted" style="max-width: 600px;">
-                                    {{ lesson.description|truncatechars:140 }}
-                                </p>
-                            </div>
-                            <div class="text-end">
-                                <a href="{% url 'lesson_detail' lesson.pk %}" class="btn btn-sm btn-primary mb-1"><i class="fas fa-arrow-right me-1"></i>Continue</a>
-                                <span class="d-block text-muted small">{{ lesson.created_at|date:"Y-m-d" }}</span>
-                            </div>
-                        </div>
-
-                        <!-- Progress Bar -->
-                        <div class="mt-3">
-                            {% if percent is None %}
-                                <small class="text-muted">No exercises yet</small>
-                            {% else %}
-                                <div class="progress" style="height: 16px;">
-                                    <div class="progress-bar bg-success" role="progressbar"
-                                         style="width: {{ percent }}%;"
-                                         aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100">
-                                    </div>
+                        <div class="list-group-item shadow-sm mb-3 rounded" style="transition: transform 0.3s ease;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 fw-bold">{{ lesson.title }}</h6>
+                                    <small class="text-muted">
+                                        {{ lesson.get_skill_level_display }} • {{ lesson.get_category_display }}
+                                    </small>
+                                    <p class="mb-0 mt-2 text-muted" style="max-width: 600px;">
+                                        {{ lesson.description|truncatechars:140 }}
+                                    </p>
                                 </div>
-                                <small class="text-muted">{{ percent }}% complete</small>
-                            {% endif %}
+                                <div class="text-end">
+                                    <a href="{% url 'lesson_detail' lesson.pk %}" class="btn btn-sm btn-primary mb-1">Continue</a>
+                                    <span class="d-block text-muted small">{{ lesson.created_at|date:"Y-m-d" }}</span>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                {% if percent is None %}
+                                    <small class="text-muted">No exercises yet</small>
+                                {% else %}
+                                    <div class="progress" style="height: 16px;" data-bs-toggle="tooltip" title="{{ percent }}% complete">
+                                        <div class="progress-bar bg-success" role="progressbar"
+                                             style="width: {{ percent }}%;"
+                                             aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">{{ percent }}% complete</small>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
                     {% endwith %}
                 {% empty %}
                     <div class="list-group-item text-center text-muted py-4">No lessons found for these criteria.</div>
@@ -94,23 +157,26 @@
             </div>
         </div>
 
-        <!-- Right column: quick links / recent -->
+        <!-- Sidebar -->
         <div class="col-lg-4">
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body">
-                    <h6 class="text-primary"><i class="fas fa-lightbulb me-2"></i>Quick Hints</h6>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Start with a lesson matching your skill level.</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Use the search to find lessons by topic or title.</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Click Continue to view lesson media and exercises.</li>
-                        <li><i class="fas fa-check-circle text-success me-2"></i>Your progress bar shows how much you’ve completed.</li>
+                    <h6 style="color: #00d4b4;">Recent Activity</h6>
+                    <ul class="list-unstyled mb-0">
+                        {% for sub in recent_submissions %}
+                            <li class="mb-3">
+                                <div>Submitted {{ sub.exercise.type }} for <strong>{{ sub.exercise.lesson.title }}</strong></div>
+                                <small class="text-muted">{{ sub.submitted_at|timesince }} ago</small>
+                            </li>
+                        {% empty %}
+                            <li class="text-muted">No recent submissions</li>
+                        {% endfor %}
                     </ul>
                 </div>
             </div>
-
             <div class="card shadow-sm border-0">
                 <div class="card-body">
-                    <h6 class="text-primary"><i class="fas fa-history me-2"></i>Recent Lessons</h6>
+                    <h6 style="color: #00d4b4;">Quick Links</h6>
                     <ul class="list-unstyled mb-0">
                         {% for l in recent_lessons %}
                             <li class="mb-3">
@@ -124,4 +190,10 @@
         </div>
     </div>
 </div>
+
+<!-- Bootstrap Tooltip Initialization -->
+<script>
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+</script>
 {% endblock %}

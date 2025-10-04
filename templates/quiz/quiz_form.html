@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - English Language Learning App{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col">
+            <h2 class="text-primary"><i class="fas fa-question-circle me-2"></i>{{ title }}</h2>
+            <hr class="my-4">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">{{ form.exercise.label }}</label>
+                                {{ form.exercise }}
+                                {% if form.exercise.errors %}
+                                <div class="text-danger small">{{ form.exercise.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-bold">{{ form.question_text.label }}</label>
+                                {{ form.question_text }}
+                                {% if form.question_text.errors %}
+                                <div class="text-danger small">{{ form.question_text.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{{ form.question_type.label }}</label>
+                                {{ form.question_type }}
+                                {% if form.question_type.errors %}
+                                <div class="text-danger small">{{ form.question_type.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Options -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{{ form.option1.label }}</label>
+                                {{ form.option1 }}
+                                {% if form.option1.errors %}
+                                <div class="text-danger small">{{ form.option1.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{{ form.option2.label }}</label>
+                                {{ form.option2 }}
+                                {% if form.option2.errors %}
+                                <div class="text-danger small">{{ form.option2.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{{ form.option3.label }}</label>
+                                {{ form.option3 }}
+                                {% if form.option3.errors %}
+                                <div class="text-danger small">{{ form.option3.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{{ form.option4.label }}</label>
+                                {{ form.option4 }}
+                                {% if form.option4.errors %}
+                                <div class="text-danger small">{{ form.option4.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{{ form.correct_answer.label }}</label>
+                                {{ form.correct_answer }}
+                                {% if form.correct_answer.errors %}
+                                <div class="text-danger small">{{ form.correct_answer.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-success"><i class="fas fa-save me-2"></i>Save</button>
+                            <a href="{% url 'quiz_list' %}" class="btn btn-secondary"><i class="fas fa-times me-2"></i>Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

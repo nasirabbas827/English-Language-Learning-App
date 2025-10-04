@@ -101,26 +101,75 @@ class ExerciseForm(forms.ModelForm):
         }
 
 
-from .models import QuizQuestion, QuizOption
+from django import forms
+from .models import Quiz
 
-class QuizQuestionForm(forms.ModelForm):
+class QuizForm(forms.ModelForm):
     class Meta:
-        model = QuizQuestion
-        fields = ['exercise', 'question_text', 'question_type', 'correct_answer']
+        model = Quiz
+        fields = [
+            'exercise',
+            'question_text',
+            'question_type',
+            'option1',
+            'option2',
+            'option3',
+            'option4',
+            'correct_answer',
+        ]
         widgets = {
             'exercise': forms.Select(attrs={'class': 'form-select'}),
             'question_text': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'question_type': forms.Select(attrs={'class': 'form-select'}),
-            'correct_answer': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'option1': forms.TextInput(attrs={'class': 'form-control'}),
+            'option2': forms.TextInput(attrs={'class': 'form-control'}),
+            'option3': forms.TextInput(attrs={'class': 'form-control'}),
+            'option4': forms.TextInput(attrs={'class': 'form-control'}),
+            'correct_answer': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+from django import forms
+from .models import LiveSession
+
+class LiveSessionForm(forms.ModelForm):
+    class Meta:
+        model = LiveSession
+        fields = ['title', 'start_time', 'end_time', 'session_url', 'status']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'start_time': forms.DateTimeInput(
+                attrs={
+                    'type': 'datetime-local',
+                    'class': 'form-control'
+                }
+            ),
+            'end_time': forms.DateTimeInput(
+                attrs={
+                    'type': 'datetime-local',
+                    'class': 'form-control'
+                }
+            ),
+            'session_url': forms.URLInput(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+from django import forms
+from .models import DiscussionThread, DiscussionPost
+
+class DiscussionThreadForm(forms.ModelForm):
+    class Meta:
+        model = DiscussionThread
+        fields = ['title', 'description']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
         }
 
 
-class QuizOptionForm(forms.ModelForm):
+class DiscussionPostForm(forms.ModelForm):
     class Meta:
-        model = QuizOption
-        fields = ['question', 'option_text', 'is_correct']
+        model = DiscussionPost
+        fields = ['content']
         widgets = {
-            'question': forms.Select(attrs={'class': 'form-select'}),
-            'option_text': forms.TextInput(attrs={'class': 'form-control'}),
-            'is_correct': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'rows':3}),
         }

@@ -1,118 +1,180 @@
 {% extends "base.html" %}
-{% block title %}English Language Learning App - Learn English with Ease{% endblock %}
+{% block title %}English Language Learning App - Master English with Ease{% endblock %}
 {% block content %}
 <!-- Hero Section -->
-<div class="hero-section" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80'); background-size: cover; background-position: center; padding: 100px 0; color: white;">
+<div class="hero-section position-relative text-white" style="background: linear-gradient(135deg, rgba(0,212,180,0.8), rgba(26,26,26,0.7)), url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80'); background-size: cover; background-position: center; padding: 120px 0;">
     <div class="container text-center">
-        <h1 class="display-4 mb-3"><i class="fas fa-language me-2"></i>Welcome to English Language Learning App</h1>
-        <p class="lead mb-4">Master English with interactive lessons, quizzes, and personalized feedback tailored to your skill level!</p>
+        <h1 class="display-3 mb-3 fw-bold animate__animated animate__fadeIn" style="color: #fff;"><i class="fas fa-language me-2"></i>English Language Learning App</h1>
+        <p class="lead mb-4 fs-4 animate__animated animate__fadeIn animate__delay-1s">Master English with interactive lessons, gamified challenges, and personalized feedback tailored to your journey!</p>
         {% if request.session.user_id %}
             {% if request.session.user_role == "student" %}
-                <p class="mb-4">You are logged in as <strong>Student</strong>.</p>
-                <a href="{% url 'student_dashboard' %}" class="btn btn-primary btn-lg"><i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard</a>
+                <p class="mb-4 fs-5">Welcome back, <strong>{{ request.session.user_name|default:"Student" }}</strong>!</p>
+                <a href="{% url 'student_dashboard' %}" class="btn btn-light btn-lg me-2" data-bs-toggle="tooltip" title="Access your learning dashboard"><i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard</a>
             {% elif request.session.user_role == "teacher" %}
-                <p class="mb-4">You are logged in as <strong>Teacher</strong>.</p>
-                <a href="{% url 'teacher_dashboard' %}" class="btn btn-primary btn-lg"><i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard</a>
+                <p class="mb-4 fs-5">Welcome back, <strong>{{ request.session.user_name|default:"Teacher" }}</strong>!</p>
+                <a href="{% url 'teacher_dashboard' %}" class="btn btn-light btn-lg me-2" data-bs-toggle="tooltip" title="Manage your classes and lessons"><i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard</a>
             {% endif %}
         {% else %}
-            <p class="mb-4">Join our platform to start your English learning journey today.</p>
-            <a href="{% url 'login' %}" class="btn btn-primary btn-lg me-2"><i class="fas fa-sign-in-alt me-2"></i>Login</a>
-            <a href="{% url 'register' %}" class="btn btn-success btn-lg"><i class="fas fa-user-plus me-2"></i>Register</a>
+            <p class="mb-4 fs-5">Join thousands of learners worldwide and start your path to fluency today!</p>
+            <a href="{% url 'register' %}" class="btn btn-success btn-lg me-2" data-bs-toggle="tooltip" title="Create your free account"><i class="fas fa-user-plus me-2"></i>Start Learning Now</a>
+            <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg" data-bs-toggle="tooltip" title="Sign in to your account"><i class="fas fa-sign-in-alt me-2"></i>Login</a>
         {% endif %}
     </div>
 </div>
 
 <!-- Features Section -->
 <div class="container my-5">
-    <h2 class="text-center mb-5 text-primary"><i class="fas fa-star me-2"></i>Why Choose Our App?</h2>
+    <h2 class="text-center mb-5" style="color: #00d4b4;"><i class="fas fa-star me-2"></i>Why Choose Our Platform?</h2>
     <div class="row g-4">
         <div class="col-md-4">
-            <div class="card shadow-sm h-100 border-0">
-                <img src="https://images.unsplash.com/photo-1755548413928-4aaeba7c740e?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="card-img-top" alt="Interactive Lessons">
+            <div class="card shadow-sm h-100 border-0" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="https://images.unsplash.com/photo-1755548413928-4aaeba7c740e?q=80&w=1170&auto=format&fit=crop" class="card-img-top" alt="Interactive Lessons">
                 <div class="card-body text-center">
-                    <h4 class="card-title">Interactive Lessons</h4>
-                    <p class="card-text">Engage with multimedia content like videos, audio clips, and flashcards tailored to your skill level.</p>
+                    <h4 class="card-title" style="color: #00d4b4;">Interactive Lessons</h4>
+                    <p class="card-text">Dive into engaging multimedia lessons with videos, audio, flashcards, and quizzes tailored to beginner, intermediate, and advanced learners.</p>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card shadow-sm h-100 border-0">
-                <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Gamified Learning">
+            <div class="card shadow-sm h-100 border-0" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" class="card-img-top" alt="Gamified Learning">
                 <div class="card-body text-center">
-                    <h4 class="card-title">Gamified Learning</h4>
-                    <p class="card-text">Earn points, badges, and compete on leaderboards to stay motivated and track your progress.</p>
+                    <h4 class="card-title" style="color: #00d4b4;">Gamified Learning</h4>
+                    <p class="card-text">Stay motivated with points, badges, leaderboards, and certificates that celebrate your progress and achievements.</p>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card shadow-sm h-100 border-0">
-                <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="card-img-top" alt="Personalized Feedback">
+            <div class="card shadow-sm h-100 border-0" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=1170&auto=format&fit=crop" class="card-img-top" alt="Personalized Feedback">
                 <div class="card-body text-center">
-                    <h4 class="card-title">Personalized Feedback</h4>
-                    <p class="card-text">Get automated grammar and spelling feedback on writing exercises to improve your skills.</p>
+                    <h4 class="card-title" style="color: #00d4b4;">Personalized Feedback</h4>
+                    <p class="card-text">Receive instant grammar, spelling, and pronunciation feedback on writing and speaking exercises to accelerate your learning.</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+
 <!-- How It Works Section -->
-<div class="bg-light py-5">
-    <div class="container">
-        <h2 class="text-center mb-5 text-primary"><i class="fas fa-cogs me-2"></i>How It Works</h2>
-        <div class="row g-4">
-            <div class="col-md-3 text-center">
-                <i class="fas fa-user-plus fa-3x mb-3 text-primary"></i>
+<div class="container my-5">
+    <h2 class="text-center mb-5" style="color: #00d4b4;"><i class="fas fa-cogs me-2"></i>How It Works</h2>
+    <div class="row g-4">
+        <div class="col-md-3 text-center">
+            <div class="p-3 bg-light rounded" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <i class="fas fa-user-plus fa-3x mb-3" style="color: #00d4b4;"></i>
                 <h5>Sign Up</h5>
-                <p>Create an account as a student or teacher to access personalized learning tools.</p>
+                <p>Create a free account as a student or teacher to unlock personalized learning tools and resources.</p>
             </div>
-            <div class="col-md-3 text-center">
-                <i class="fas fa-book-open fa-3x mb-3 text-primary"></i>
+        </div>
+        <div class="col-md-3 text-center">
+            <div class="p-3 bg-light rounded" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <i class="fas fa-book-open fa-3x mb-3" style="color: #00d4b4;"></i>
                 <h5>Choose Lessons</h5>
-                <p>Select from beginner to advanced lessons in grammar, vocabulary, and more.</p>
+                <p>Select from a variety of lessons covering grammar, vocabulary, reading, writing, and speaking.</p>
             </div>
-            <div class="col-md-3 text-center">
-                <i class="fas fa-tasks fa-3x mb-3 text-primary"></i>
+        </div>
+        <div class="col-md-3 text-center">
+            <div class="p-3 bg-light rounded" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <i class="fas fa-tasks fa-3x mb-3" style="color: #00d4b4;"></i>
                 <h5>Practice & Learn</h5>
-                <p>Complete interactive exercises with instant feedback to hone your skills.</p>
+                <p>Engage with interactive exercises, quizzes, and multimedia content with instant feedback.</p>
             </div>
-            <div class="col-md-3 text-center">
-                <i class="fas fa-trophy fa-3x mb-3 text-primary"></i>
+        </div>
+        <div class="col-md-3 text-center">
+            <div class="p-3 bg-light rounded" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <i class="fas fa-trophy fa-3x mb-3" style="color: #00d4b4;"></i>
                 <h5>Earn Rewards</h5>
-                <p>Gain points, badges, and certificates as you progress through your learning journey.</p>
+                <p>Collect badges, points, and certificates to celebrate your progress and achievements.</p>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Testimonials Section -->
+<div class="bg-white py-5">
+    <div class="container">
+        <h2 class="text-center mb-5" style="color: #00d4b4;"><i class="fas fa-quote-left me-2"></i>Learner Success Stories</h2>
+        <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="card shadow-sm border-0 mx-auto" style="max-width: 600px;">
+                        <div class="card-body text-center">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" class="rounded-circle mb-3" alt="Learner 1" style="width: 80px; height: 80px;">
+                            <p class="card-text">"This app transformed my English learning experience with fun quizzes and badges that kept me motivated!"</p>
+                            <h6 class="card-title">Sarah M., Student</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="card shadow-sm border-0 mx-auto" style="max-width: 600px;">
+                        <div class="card-body text-center">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" class="rounded-circle mb-3" alt="Learner 2" style="width: 80px; height: 80px;">
+                            <p class="card-text">"As a teacher, I love the ability to create customized lessons and track my students’ progress in real-time."</p>
+                            <h6 class="card-title">Mr. Ahmed, Teacher</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="card shadow-sm border-0 mx-auto" style="max-width: 600px;">
+                        <div class="card-body text-center">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" class="rounded-circle mb-3" alt="Learner 3" style="width: 80px; height: 80px;">
+                            <p class="card-text">"The speaking exercises with instant feedback helped me gain confidence in my pronunciation."</p>
+                            <h6 class="card-title">John K., Student</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- FAQ Section -->
 <div class="container my-5">
-    <h2 class="text-center mb-5 text-primary"><i class="fas fa-quote-left me-2"></i>Learner Success Stories</h2>
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body text-center">
-                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" class="rounded-circle mb-3" alt="Learner 1" style="width: 80px; height: 80px;">
-                    <p class="card-text">"This app made learning English fun and engaging! The quizzes and badges kept me motivated."</p>
-                    <h6 class="card-title">Sarah M., Student</h6>
+    <h2 class="text-center mb-5" style="color: #00d4b4;"><i class="fas fa-question-circle me-2"></i>Frequently Asked Questions</h2>
+    <div class="accordion" id="faqAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="faq1">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                    Is the app free to use?
+                </button>
+            </h2>
+            <div id="collapse1" class="accordion-collapse collapse show" aria-labelledby="faq1" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    Yes, our app offers a free plan with access to a wide range of lessons and exercises. Premium features are available for advanced users.
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body text-center">
-                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" class="rounded-circle mb-3" alt="Learner 2" style="width: 80px; height: 80px;">
-                    <p class="card-text">"As a teacher, I love creating customized lessons and tracking my students' progress."</p>
-                    <h6 class="card-title">Mr. Ahmed, Teacher</h6>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="faq2">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                    What skill levels are available?
+                </button>
+            </h2>
+            <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="faq2" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    We offer lessons for all levels: {% for val, label in SKILL_CHOICES %}{{ label }}{% if not forloop.last %}, {% endif %}{% endfor %}, ensuring everyone can learn at their own pace.
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body text-center">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" class="rounded-circle mb-3" alt="Learner 3" style="width: 80px; height: 80px;">
-                    <p class="card-text">"The speaking practice with feedback helped me improve my pronunciation significantly!"</p>
-                    <h6 class="card-title">John K., Student</h6>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="faq3">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                    How does the feedback system work?
+                </button>
+            </h2>
+            <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="faq3" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    Our app provides instant automated feedback on grammar, spelling, and pronunciation for writing and speaking exercises, with detailed insights from teachers for premium users.
                 </div>
             </div>
         </div>
@@ -122,9 +184,24 @@
 <!-- Call to Action Section -->
 <div class="bg-primary py-5 text-white">
     <div class="container text-center">
-        <h3 class="mb-3">Ready to Master English?</h3>
-        <p class="mb-4">Join thousands of learners and start your journey to fluency today!</p>
-        <a href="{% url 'register' %}" class="btn btn-light btn-lg"><i class="fas fa-user-plus me-2"></i>Start Learning Now</a>
+        <h3 class="mb-3 fw-bold">Ready to Master English?</h3>
+        <p class="mb-4 fs-5">Join thousands of learners and unlock your potential with our interactive platform. Sign up now and get started with your first lesson for free!</p>
+        <a href="{% url 'register' %}" class="btn btn-light btn-lg" data-bs-toggle="tooltip" title="Create your free account today"><i class="fas fa-user-plus me-2"></i>Start Learning Now</a>
     </div>
 </div>
+
+<!-- JavaScript for Interactivity -->
+<script>
+    // Bootstrap Tooltip Initialization
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+    // Smooth Scroll for Anchor Links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+</script>
 {% endblock %}
